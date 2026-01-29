@@ -14,12 +14,12 @@ SELECT * FROM USER_TABLES;
 
 /* Step 3.	Examine the design of each table by running the DESCRIBE command: ORDERS, PRODUCTLIST, REVIEWS, STOREFRONT, USERBASE, and USERLIBRARY */
 
-DESCRIBE ORDERS;
-DESCRIBE PRODUCTLIST;
-DESCRIBE REVIEWS;
-DESCRIBE STOREFRONT;
-DESCRIBE USERBASE;
-DESCRIBE USERLIBRARY;
+DESC ORDERS
+DESC PRODUCTLIST
+DESC REVIEWS
+DESC STOREFRONT
+DESC USERBASE
+DESC USERLIBRARY
 
 /* Step 4.	Display all data currently present in the database: ORDERS, PRODUCTLIST, REVIEWS, STOREFRONT, USERBASE, and USERLIBRARY */
 
@@ -90,27 +90,26 @@ WHERE GENRE = 'Strategy';
 
 /*Step 15.	Display the PRODUCTCODE, DESCRIPTION, and PRICE for any product that costs more than $25, sorted by descending PRICE.*/
 
-SELECT PRODUCTCODE, DESCRIPTION, PRICE
-FROM products
-WHERE PRICE > 25
-ORDER BY PRICE DESC;
+select a.productcode, b.productname
+from orders a,
+     productlist b
+where a.price >25
+and a.productcode=b.productcode
 
 /*Step 16.	Display the INVENTORYID and PRICE of all products in the STOREFRONT table, sorted by ascending PRICE.*/
 
-SELECT INVENTORY, PRICE 
+SELECT INVENTORYID, PRICE 
 FROM STOREFRONT 
 ORDER BY PRICE ASC;
-
 /*Step 17.	Display the PRODUCTCODE and REVIEW of any product with a RATING of 1.*/
 
 SELECT PRODUCTCODE, REVIEW 
-FROM STOREFRONT 
+FROM REVIEWS
 WHERE RATING = 1;
-
 /*Step 18.	Display the PRODUCTCODE and REVIEW of any product with a RATING of 4 or higher.*/
 
 SELECT PRODUCTCODE, REVIEW 
-FROM STOREFRONT 
+FROM REVIEWS
 WHERE RATING >= 4;
 
 /*Step 19.	Display every unique USERID from users who have placed an order.*/
@@ -122,12 +121,4 @@ FROM ORDERS;
 
 SELECT * 
 FROM ORDERS 
-ORDER BY PURCHASE_DATE ASC;
-
-
-
-
-
-
-
-
+ORDER BY PURCHASEDATE ASC;
