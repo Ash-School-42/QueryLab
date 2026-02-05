@@ -1,0 +1,164 @@
+--Ash
+/*Task 1*/
+ALTER TABLE ProductList ADD (Price NUMBER(6,2), Description VARCHAR2(250));
+
+UPDATE ProductList SET Price = 22.22, Description = 'The next big indie game of the year!'
+WHERE ProductCOde = 'Game1';
+
+DROP TABLE storefront;
+
+/*Task 2*/
+CREATE TABLE CHATLOG (ChatID NUMBER,
+    ReceiverID NUMBER(3),
+    SenderID NUMBER(3),
+    DateSent DATE,
+    Content VARCHAR2(250),
+    CONSTRAINT PK_ChatLog PRIMARY KEY (ChatID),
+    CONSTRAINT FK_ChatLog_ReceiverID FOREIGN KEY (ReceiverID) REFERENCES UserBase(UserID),
+    CONSTRAINT FK_ChatLog_SenderID FOREIGN KEY (SenderID) REFERENCES UserBase(UserID)
+);
+
+INSERT INTO ChatLog VALUES
+(3,109,115, TO_DATE('30-AUG-2022', 'DD-MON-YYYY'), 'That was AWESOME!!!');
+
+/*Task 3*/
+CREATE TABLE FRIENDSLIST (
+    UserID NUMBER (3),
+    FriendID NUMBER (3),
+    CONSTRAINT PK_FriendsLIst PRIMARY KEY (UserID, FriendID),
+    CONSTRAINT FK_FriendsList_userID FOREIGN KEY (UserID) REFERENCES UserBase(UserID),
+    CONSTRAINT FK_FriendsList_userID FOREIGN KEY (FriendID) REFERENCES UserBase(UserID)
+);
+
+INSERT INTO FriendsList VALUES (108, 112);
+INSERT INTO FriendsList VALUES (109, 115);
+INSERT INTO FriendsList VALUES (110, 111);
+INSERT INTO FriendsList VALUES (112, 115);
+INSERT INTO FriendsList VALUES (103, 104);
+
+/*Tasak 4*/
+CREATE TABLE WISHLIST (
+    UserID NUMBER(3),
+    ProductCode VARCHAR2(5),
+    Position NUMBER(3),
+    CONSTRAINT PK_WishList PRIMARY KEY (UserID, ProductCode),
+    CONSTRAINT FK_WishList_userID FOREIGN KEY (UserID) REFERENCES UserBase(UserID),
+    CONSTRAINT FK_WishList_userID FOREIGN KEY (ProductCode) REFERENCES ProductList(ProductCode)
+);
+
+INSERT INTO WishList VALUES (108, 112);
+INSERT INTO WishList VALUES (109, 115);
+INSERT INTO WishList VALUES (110, 111);
+INSERT INTO WishList VALUES (112, 115);
+INSERT INTO WishList VALUES (103, 104);
+
+/*Task 5*/
+CREATE TABLE UserProfile(
+    UserID NUMBER(3),
+    ImageFile VARCHAR2(250),
+    CONSTRAINT PK_UserProfile PRIMARY KEY (UserID),
+    CONSTRAINT FK_UserProfile_UserID FOREIGN KEY (UserID) REFERENCES UserBase (UserID));
+
+INSERT INTO UserProfile VALUES (101, 'img1.jpg', 'Image1 Description');
+INSERT INTO UserProfile VALUES (102, 'img2.jpg', 'Image2 Description');
+INSERT INTO UserProfile VALUES (103, 'img3.jpg', 'Image3 Description');
+INSERT INTO UserProfile VALUES (104, 'img4.jpg', 'Image4 Description');
+INSERT INTO UserProfile VALUES (105, 'img5.jpg', 'Image5 Description');
+
+/*Task 6*/
+CREATE TABLE SECURITYQUESTION(
+    QuestionID NUMBER,
+    UserID NUMBER(3),
+    Question VARCHAR2(250),
+    Answer VARCHAR2(250),
+    CONSTRAINT PK_SECURITYQUESTION PRIMARY KEY (QuestionID),
+    CONSTRAINT FK_SECURITYQUESTION_USER FOREIGN KEY (USERID)
+        REFERENCES UserBase (UserID)
+);
+
+INSERT INTO SECURITYQUESTION (QuestionID, UserID, Question, Answer) VALUES (1, 101, 'What was your first per''s name?', 'Fluffy');
+INSERT INTO SECURITYQUESTION (QuestionID, UserID, Question, Answer) VALUES (2, 102, 'What city were you born in?', 'New York');
+INSERT INTO SECURITYQUESTION (QuestionID, UserID, Question, Answer) VALUES (3, 103, 'What was the make of your first car?', 'Toyota');
+INSERT INTO SECURITYQUESTION (QuestionID, UserID, Question, Answer) VALUES (4, 104, 'What is your mother''s maiden name?', 'Smith');
+INSERT INTO SECURITYQUESTION (QuestionID, UserID, Question, Answer) VALUES (5, 105, 'What was your high school mascot?', 'Tigers');
+INSERT INTO SECURITYQUESTION (QuestionID, UserID, Question, Answer) VALUES (6, 106, 'What is your favorite book?', 'Dune');
+INSERT INTO SECURITYQUESTION (QuestionID, UserID, Question, Answer) VALUES (7, 107, 'What street did you grow up on?', 'Maple');
+INSERT INTO SECURITYQUESTION (QuestionID, UserID, Question, Answer) VALUES (8, 108, 'What is your favorite movie?', 'Inception');
+INSERT INTO SECURITYQUESTION (QuestionID, UserID, Question, Answer) VALUES (9, 109, 'What was your favorite subject in school?', 'History');
+INSERT INTO SECURITYQUESTION (QuestionID, UserID, Question, Answer) VALUES (10, 110, 'What was the name of your first teacher?', 'Mrs. Davis');
+
+/*Task 7*/
+CREATE TABLE COMMUNITYRULES(
+    RuleNum NUMBER(3) CONSTRAINT pk_rules PRIMARY KEY,
+    Title VARCHAR2(250),
+    Description VARCHAR2(250),
+    SeverityPoint NUMBER (4)
+);
+
+INSERT INTO COMMUNITYRULES (RuleNum, Title, Description, SeverityPoint) VALUES (101, 'No Spamming', 'Posting irrelevant or advertising content.', 10);
+INSERT INTO COMMUNITYRULES (RuleNum, Title, Description, SeverityPoint) VALUES (102, 'Be Respectful', 'Treat all community members with respect', 15);
+INSERT INTO COMMUNITYRULES (RuleNum, Title, Description, SeverityPoint) VALUES (103, 'No Harassment', 'Bullying or threatening language.', 50);
+INSERT INTO COMMUNITYRULES (RuleNum, Title, Description, SeverityPoint) VALUES (104, 'No NSFW Content', 'Explicit, violent, or inappropriate content.', 100);
+INSERT INTO COMMUNITYRULES (RuleNum, Title, Description, SeverityPoint) VALUES (105, 'Relevant Posts', 'Posts must be relevant to the channel topic.', 5);
+INSERT INTO COMMUNITYRULES (RuleNum, Title, Description, SeverityPoint) VALUES (106, 'No Doxxing', 'Sharing private personal  information.', 200);
+INSERT INTO COMMUNITYRULES (RuleNum, Title, Description, SeverityPoint) VALUES (107, 'No Self-Promotion', 'Unsolicited promotion of your own links.', 10);
+INSERT INTO COMMUNITYRULES (RuleNum, Title, Description, SeverityPoint) VALUES (108, 'Use English', 'Only English allowed in main channels.', 5);
+INSERT INTO COMMUNITYRULES (RuleNum, Title, Description, SeverityPoint) VALUES (109, 'No Spoilers', 'Do not share spoilers without tag.', 20);
+INSERT INTO COMMUNITYRULES (RuleNum, Title, Description, SeverityPoint) VALUES (110, 'Follow TOS', 'Adhere to platform Terms of Service.', 100);
+
+/*Task 8*/
+CREATE TABLE INFRACTIONS(
+    InfractionID NUMBER,
+    UserID NUMBER (3),
+    RuleNum NUMBER (3)
+    DateAssigned DATE,
+    Penalty VARCHAR2(250),
+    CONSTRAINT PK_INFRACTION PRIMARY KEY (InfractionID),
+    CONSTRAINT FK_USERID FOREIGN KEY (UserID) REFERENCES UserBase (UserID),
+    CONSTRAINT FK_RULNUM FOREIGN KEY (RuleNum) REFERENCES COMMUNITYRULES(RulNum)
+);
+
+INSERT INTO INFRACTIONS (InfractionID, UserID, RuleNum, DateAssigned, Penalty) VALUES (1, 101, 101, To_Date('2025-01-10', 'YYYY-MM-DD'), 'Warning');
+INSERT INTO INFRACTIONS (InfractionID, UserID, RuleNum, DateAssigned, Penalty) VALUES (2, 102, 102, To_Date('2025-01-11', 'YYYY-MM-DD'), '1-Day Ban');
+INSERT INTO INFRACTIONS (InfractionID, UserID, RuleNum, DateAssigned, Penalty) VALUES (3, 103, 101, To_Date('2025-01-12', 'YYYY-MM-DD'), 'Warning');
+INSERT INTO INFRACTIONS (InfractionID, UserID, RuleNum, DateAssigned, Penalty) VALUES (4, 101, 103, To_Date('2025-01-13', 'YYYY-MM-DD'), '3-Day Ban');
+INSERT INTO INFRACTIONS (InfractionID, UserID, RuleNum, DateAssigned, Penalty) VALUES (5, 104, 102, To_Date('2025-01-14', 'YYYY-MM-DD'), 'Warning');
+INSERT INTO INFRACTIONS (InfractionID, UserID, RuleNum, DateAssigned, Penalty) VALUES (6, 105, 101, To_Date('2025-01-15', 'YYYY-MM-DD'), 'Warning');
+INSERT INTO INFRACTIONS (InfractionID, UserID, RuleNum, DateAssigned, Penalty) VALUES (7, 102, 104, To_Date('2025-01-16', 'YYYY-MM-DD'), '7-Day Ban');
+INSERT INTO INFRACTIONS (InfractionID, UserID, RuleNum, DateAssigned, Penalty) VALUES (8, 106, 103, To_Date('2025-01-17', 'YYYY-MM-DD'), 'Warning');
+INSERT INTO INFRACTIONS (InfractionID, UserID, RuleNum, DateAssigned, Penalty) VALUES (9, 107, 102, To_Date('2025-01-18', 'YYYY-MM-DD'), '1-Day Ban');
+INSERT INTO INFRACTIONS (InfractionID, UserID, RuleNum, DateAssigned, Penalty) VALUES (10, 103, 104, To_Date('2025-01-19', 'YYYY-MM-DD'), 'Permanent Ban');
+
+/*Task 9*/
+CREATE TABLE USERSUPPORT(
+    TICKETID NUMBER,
+    EMAIL VARCHAR2(250),
+    ISSUE VARCHAR2(250),
+    DATESUBMITTED DATE,
+    DATEUPDATED DATE,
+    STATUS VARCHAR2(250),
+    CONSTRAINT PK_TICKETID PRIMARY KEY (TICKETID)
+);
+
+INSERT INTO USERSUPPORT VALUES (1, 'john.d@example.com', 'Cannot login', TO_DATE('2026-01-01', 'YYYY-MM-DD'),TO_DATE ('2026-01-02', 'YYYY-MM-DD'), 'Closed');
+INSERT INTO USERSUPPORT VALUES (2, 'sara.p@test.com', 'Password reset', TO_DATE('2026-01-05', 'YYYY-MM-DD'), NULL, 'Open');
+INSERT INTO USERSUPPORT VALUES (3, 'mike.r@corp.com', 'Software crash', TO_DATE('2026-01-05', 'YYYY-MM-DD'), TO_DATE ('2026-01-06', 'YYYY-MM-DD'), 'CIn Progress');
+INSERT INTO USERSUPPORT VALUES (4, 'anna.l@dev.net', 'Slow loading', TO_DATE('2026-01-07', 'YYYY-MM-DD'), NULL, 'Closed');
+INSERT INTO USERSUPPORT VALUES (5, 'chris.k@example.com', 'API error', TO_DATE('2026-01-08', 'YYYY-MM-DD'),TO_DATE ('2026-01-10', 'YYYY-MM-DD'), 'Resolved');
+INSERT INTO USERSUPPORT VALUES (6, 'lisa.m@test.com', 'VPN issue', TO_DATE('2026-01-09', 'YYYY-MM-DD'),NULL, 'Open');
+INSERT INTO USERSUPPORT VALUES (7, 'bob.s@corp.com', 'Report generation failed', TO_DATE('2026-01-10', 'YYYY-MM-DD'),NULL, 'Open');
+INSERT INTO USERSUPPORT VALUES (8, 'emma.j@dev.net', 'cannot acces file', TO_DATE('2026-01-11', 'YYYY-MM-DD'),TO_DATE ('2026-01-12', 'YYYY-MM-DD'), 'Closed');
+INSERT INTO USERSUPPORT VALUES (9, 'paul.h@example.com', 'email sync issue', TO_DATE('2026-01-12', 'YYYY-MM-DD'),NULL, 'Open');
+INSERT INTO USERSUPPORT VALUES (10, 'nina.p@test.com', 'Hardware request', TO_DATE('2026-01-13', 'YYYY-MM-DD'),NULL, 'Open');
+
+/*Task 10*/
+CREATE VIEW UniqueSecurityQuestion AS
+SELECT DISTINCT QUESTION
+FROM SECURITYQUESTION;
+
+CREATE VEIW ActiveTicketsView AS
+SELECT TICKETID, EMAIL, ISSUE, DATEUPDATED
+FROM USERSUPPORT
+WHERE STATUS IN ('NEW', 'IN PROGRESS')
+ORDER BY DATEUPDATED ASC;
+
