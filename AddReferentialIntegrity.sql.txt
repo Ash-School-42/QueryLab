@@ -1,0 +1,202 @@
+--Ash
+/*Task 1*/
+ALTER TABLE ORDERS
+ADD CONSTRAINT fk_orders_user
+FOREIGN KEY (UserID)
+REFERENCES Userbase(UserID);
+
+ALTER TABLE ORDERS
+ADD CONSTRAINT fk_orders_product
+FOREIGN KEY (ProductCode)
+REFERENCES ProductList(ProductCode);
+
+ALTER TABLE REVIEWS
+ADD CONSTRAINT fk_reviews_user
+FOREIGN KEY (UserID)
+REFERENCES Userbase(UserID);
+
+ALTER TABLE REVIEWS
+ADD CONSTRAINT fk_reviews_product
+FOREIGN KEY (ProductCode)
+REFERENCES ProductList(ProductCode);
+
+ALTER TABLE USERLIBRARY
+ADD CONSTRAINT fk_userlibrary_user
+FOREIGN KEY (UserID)
+REFERENCES Userbase(UserID);
+
+ALTER TABLE USERLIBRARY
+ADD CONSTRAINT fk_userlibrary_product
+FOREIGN KEY (ProductCode)
+REFERENCES ProductList(ProductCode);
+
+/*Task 2*/
+SELECT FIRSTNAME || ' ' || LASTNAME AS "Full Name", USERNAME 
+FROM USERBASE 
+WHERE ADD_MONTHS(BIRTHDAY, 12 * 18) <= TRUNC(SYSDATE);
+
+/*Task 3*/
+SELECT 
+    MAX(LENGTH(USERNAME)) AS MaxUsernameLength,
+    AVG(LENGTH(USERNAME)) AS AvgUsernameLength
+FROM 
+    USERBASE
+/*Task 4*/
+SELECT *
+FROM SECURITYQUESTION
+WHERE Question LIKE 'What is%' OR Question LIKE 'What was%';
+
+/*Task 5*/
+SELECT
+    PRODUCTCODE,
+    MIN(RATING) AS "loest RATING",
+    COUNT(*) AS "number of reveiws"
+FROM
+    REVIEWS
+GROUP BY
+    PRODUCTCODE
+ORDER BY
+    "number of reviews" DESC;	
+
+/*Task 6*/
+SELECT
+    PRODUCTCODE,
+    COUNT(USERID) AS NumberOfUsersAtPosition1
+FROM
+    WISHLIST
+WHERE
+    POSITION = 1
+GROUP BY
+    PRODUCTCODE
+/*Task 7*/
+SELECT
+    USERID,
+    SUM(PRICE) AS TotalSpent
+FROM
+    ORDERS
+GROUP BY
+    USERID;
+/*Task 8*/
+SELECT 
+    PURCHASEDATE, 
+    SUM(price) AS TotalGrossProfit
+FROM 
+    Orders
+GROUP BY 
+    PURCHASEDATE
+ORDER BY 
+    TotalGrossProfit DESC;
+/*Task 9*/
+SELECT 
+    PRODUCTCODE, 
+    SUM(HOURSPLAYED) AS TotalHours
+FROM 
+    USERLIBRARY
+GROUP BY 
+    PRODUCTCODE
+ORDER BY 
+    TotalHours DESC
+FETCH FIRST 5 ROWS ONLY;
+/*Task 10*/
+CREATE VIEW UserInfractionCounts AS
+SELECT
+    UserID,
+    COUNT(InfractionID) AS InfractionCount
+FROM
+    Infractions
+GROUP BY
+    UserID
+ORDER BY
+    InfractionCount DESC;
+
+/*Task 11*/
+CREATE VIEW vw_UserInfractionSummary AS
+SELECT 
+    USERID, 
+    RULENUM, 
+    COUNT(*) AS InfractionCount
+FROM 
+    INFRACTIONS
+GROUP BY 
+    USERID, 
+    RULENUM
+ORDER BY 
+    USERID;
+
+/*Task 12*/
+SELECT 
+    RULENUM, 
+    PENALTY, 
+    COUNT(*) AS AssignmentCount
+FROM 
+    INFRACTIONS
+GROUP BY 
+    RULENUM, 
+    PENALTY;
+/*Task 13*/
+SELECT
+    EMAIL,
+    ISSUE,
+    COUNT(ISSUE) AS IssueCount
+FROM
+    USERSUPPORT
+WHERE
+    STATUS = 'NEW'
+GROUP BY
+    DATESUBMITTED,
+    EMAIL,
+    ISSUE
+ORDER BY
+    IssueCount DESC;
+/*Task 14*/
+SELECT 
+    FIRSTNAME, 
+    LASTNAME, 
+    PASSWORD
+FROM 
+    USERBASE
+WHERE 
+    PASSWORD LIKE '%' || FIRSTNAME || '%'
+    OR PASSWORD LIKE '%' || LASTNAME || '%';
+/*Task 15*/
+SELECT
+    PUBLISHER,
+    AVG(PRICE) AS Average_Price
+FROM
+    PRODUCTLIST
+GROUP BY
+    PUBLISHER
+ORDER BY
+    PUBLISHER ASC;
+/*Task 16*/
+CREATE OR REPLACE VIEW View_DiscountedLegacyProducts AS
+SELECT
+    ProductName,
+    Price * 0.75 AS DiscountedPrice
+FROM
+    PRODUCTLIST
+WHERE
+    ReleaseDate < ADD_MONTHS(SYSDATE, -60);
+/*Task 17*/
+SELECT
+    GENRE,
+    MAX(PRICE) AS Maximum_Price,
+    MIN(PRICE) AS Minimum_Price
+FROM
+    PRODUCTLIST
+GROUP BY
+    GENRE;
+/*Task 18*/
+CREATE OR REPLACE VIEW CHATLOG_PREV_WEEK_V AS
+SELECT
+    *
+FROM
+    CHATLOG
+WHERE
+    DATESENT >= SYSDATE - 7
+    AND DATESENT <= SYSDATE;
+/*Task 19*/
+SELECT USERID, DATEASSIGNED, PENALTY
+FROM INFRACTIONS
+WHERE PENALTY IS NOT NULL
+  AND DATEASSIGNED >= ADD_MONTHS(TRUNC(SYSDATE), -1);
