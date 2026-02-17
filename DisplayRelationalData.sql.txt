@@ -1,0 +1,270 @@
+--Ash
+/*Task 1*/
+SELECT
+    u.username,
+    MIN(r.rating) AS lowest_rating
+FROM
+    Userbase u
+JOIN
+    Reviews r ON u.userid = r.userid
+GROUP BY
+    u.userid, u.username
+ORDER BY
+    lowest_rating ASC;
+/*Task 2*/
+SELECT
+    ub.email,
+    sq.question,
+    sq.answer
+FROM
+    userbase ub  
+INNER JOIN
+    securityquestion sq ON ub.userid = sq.userid;
+/*Task 3*/
+SELECT 
+    u.firstname, 
+    u.email, 
+    u.walletfunds
+FROM 
+    userbase u
+LEFT JOIN 
+    wishlist w ON u.userid = w.userid
+WHERE 
+    w.userid IS NULL;
+/*Task 4*/
+SELECT
+    u.username,
+    COUNT(o.orderid) AS NumberOfProductsOrdered
+FROM
+    userbase u
+INNER JOIN
+    orders o ON u.userid = o.userid
+GROUP BY
+    u.userid, u.username
+ORDER BY
+    NumberOfProductsOrdered DESC;
+/*Task 5*/
+SELECT DISTINCT 
+    u.userid, 
+    TRUNC(MONTHS_BETWEEN(SYSDATE, u.birthday) / 12) AS age 
+FROM userbase u 
+JOIN orders o ON u.userid = o.userid 
+WHERE o.purchasedate >= ADD_MONTHS(SYSDATE, -6);
+/*Task 6*/
+SELECT 
+    u.username, 
+    u.birthday
+FROM 
+    userbase u
+JOIN 
+    (SELECT userid 
+     FROM friendslist 
+     GROUP BY userid 
+     ORDER BY COUNT(friendid) DESC 
+     FETCH FIRST 1 ROWS ONLY) f ON u.userid = f.userid;
+/*Task 7*/
+SELECT
+    P.productname,
+    P.releasedate,
+    P.price,
+    P.description
+FROM
+    productlist P
+INNER JOIN
+    wishlist W ON P.productcode = W.productcode;
+/*Task 8*/
+SELECT
+    pl.productname,
+    MAX(r.rating) AS highest_rating,
+    COUNT(r.review) AS number_of_reviews
+FROM
+    productlist pl
+JOIN
+    reviews r ON pl.productcode = r.productcode
+GROUP BY
+    pl.productcode, pl.productname
+ORDER BY
+    highest_rating DESC;
+/*Task 9*/
+CREATE VIEW HighLowRatedProducts AS
+SELECT
+    p.productname,
+    p.genre,
+    r.rating
+FROM
+    productlist p 
+JOIN
+    reviews r ON p.productcode = r.productcode
+WHERE
+    r.rating IN (1, 5)
+ORDER BY
+    r.rating ASC;
+/*Task 10*/
+SELECT
+    p.genre,
+    COUNT(o.productcode) AS products_ordered_count
+FROM
+    productlist p
+JOIN
+    orders o ON p.productcode = o.productcode
+GROUP BY
+    p.genre
+ORDER BY
+    p.genre ASC;
+/*Task 11*/
+CREATE VIEW PublisherStats AS
+SELECT 
+    p.publisher,
+    AVG(p.price) AS average_price,
+    SUM(u.hoursplayed) AS total_hoursplayed
+FROM 
+    productlist p
+LEFT JOIN 
+    userlibrary u ON p.productcode = u.productcode
+GROUP BY 
+    p.publisher;
+/*Task 12*/
+SELECT 
+    P.publisher, 
+    SUM(O.price) AS TotalSpent
+FROM 
+    productlist P
+JOIN 
+    orders O ON P.productcode = O.productcode
+GROUP BY 
+    P.publisher
+ORDER BY 
+    TotalSpent DESC;
+/*Task 13*/
+SELECT 
+    s.TICKETID, 
+    u.USERNAME, 
+    s.EMAIL, 
+    s.ISSUE,
+    s.DATEUPDATED
+FROM 
+    usersupport s
+JOIN 
+    userbase u ON s.EMAIL = u.EMAIL
+WHERE 
+    s.STATUS IN ('NEW', 'IN PROGRESS')
+ORDER BY 
+    s.DATEUPDATED DESC;
+/*Task 14*/
+SELECT 
+    ub.username, 
+    COUNT(us.ticketid) AS ticket_count
+FROM 
+    userbase ub
+LEFT JOIN 
+    usersupport us ON ub.email = us.email
+GROUP BY 
+    ub.username;
+/*Task 15*/
+SELECT DISTINCT ub.userid, ub.email 
+FROM userbase ub 
+JOIN usersupport us ON ub.email = us.email 
+WHERE LOWER(ub.email) LIKE '%' || LOWER(ub.firstname) || '%' 
+   OR LOWER(ub.email) LIKE '%' || LOWER(ub.lastname) || '%' 
+   OR LOWER(ub.email) LIKE '%' || LOWER(ub.firstname) || LOWER(ub.lastname) || '%' 
+   OR LOWER(ub.email) LIKE '%' || LOWER(ub.lastname) || LOWER(ub.firstname) || '%';
+/*Task 16*/
+SELECT DISTINCT s.email
+FROM usersupport s
+LEFT JOIN userbase u ON s.email = u.email
+WHERE s.status IN ('NEW', 'IN PROGRESS')
+  AND u.email IS NULL;
+/*task 17*/
+SELECT
+    u.ticketid,
+    ub.firstname,
+    ub.lastname,
+    ub.username
+FROM
+    usersupport u
+JOIN
+    userbase ub ON u.issue LIKE '%' || ub.username || '%'
+/*Task 18*/
+SELECT
+    u.username,
+    u.password
+FROM
+    userbase u
+INNER JOIN
+    usersupport s ON u.email = s.email;
+/*Task 19*/
+CREATE OR REPLACE VIEW RecentPenalties AS
+SELECT 
+    u.USERNAME, 
+    i.DATEASSIGNED, 
+    i.PENALTY
+FROM 
+    userbase u
+JOIN 
+    infractions i ON u.userid = i.userid
+WHERE 
+    i.PENALTY IS NOT NULL
+    AND i.DATEASSIGNED >= ADD_MONTHS(TRUNC(SYSDATE), -1);
+/*Task 20*/
+SELECT
+    u.username,
+    u.email
+FROM
+    userbase u
+WHERE
+    u.birthday <= ADD_MONTHS(TRUNC(SYSDATE), -12 * 18) 
+    AND NOT EXISTS (
+        SELECT 1
+        FROM infractions i
+        WHERE i.userid = u.userid
+        AND i.dateassigned >= ADD_MONTHS(TRUNC(SYSDATE), -4)
+    );
+--Ash
+/*Task 21*/
+SELECT 
+    u.USERNAME, 
+    i.DATEASSIGNED, 
+    cr.RULENUM || ' ' || cr.TITLE AS GUIDELINE_NAME
+FROM 
+    infractions i
+JOIN 
+    userbase u ON i.userid = u.userid
+JOIN 
+    communityrules cr ON i.rulenum = cr.RULENUM;
+/*Task 22*/
+SELECT 
+    u.userid, 
+    u.username, 
+    u.email, 
+    COALESCE(SUM(c.severitypoint), 0) AS total_severity_points
+FROM 
+    userbase u
+LEFT JOIN 
+    infractions i ON u.userid = i.userid
+LEFT JOIN 
+    communityrules c ON i.rulenum = c.rulenum
+GROUP BY 
+    u.userid, 
+    u.username, 
+    u.email;
+/*Task 23*/
+SELECT
+    cr.title,
+    cr.description,
+    i.penalty
+FROM
+    infractions i
+INNER JOIN
+    communityrules cr ON i.rulenum = cr.rulenum;
+/*Task 24*/
+SELECT
+    ub.username,
+    COUNT(i.infractionid) AS infraction_count
+FROM
+    userbase ub
+JOIN
+    infractions i ON ub.userid = i.userid
+GROUP BY
+    ub.userid, ub.username
+HAVING
+    COUNT(i.infractionid) >= 15;
