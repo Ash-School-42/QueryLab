@@ -1,0 +1,142 @@
+--Ash
+/*Task 1*/
+SELECT U.userid
+FROM Userbase U 
+LEFT JOIN Orders O ON U.userid = O.userid
+WHERE orderid IS NULL;
+/*Task 2*/
+SELECT P.PRODUCTCODE
+FROM PRODUCTLIST P
+LEFT JOIN REVIEWS R ON P.PRODUCTCODE = R.PRODUCTCODE
+WHERE R.PRODUCTCODE IS NULL;
+/*Task 3*/
+SELECT USERBASE.*,
+  CASE
+    WHEN FLOOR(MONTHS_BETWEEN(SYSDATE, TO_DATE(birthday, 'MM-DD-YYYY')) / 12) >= 18 
+    THEN 'Adult'
+    ELSE 'Minor'
+  END AS AgeCategory
+FROM USERBASE;
+/*Task 4*/
+SELECT PRODUCTLIST.*,
+       CASE 
+           WHEN Price <= 20 THEN 'On Sale'
+           ELSE 'Base Price'
+       END AS PriceCategory
+FROM PRODUCTLIST;
+/*Task 5*/
+SELECT UP.USERID
+FROM productlist PL
+INNER JOIN userlibrary UL ON PL.PRODUCTCODE = UL.PRODUCTCODE
+INNER JOIN userprofile UP ON UL.USERID = UP.USERID
+WHERE PL.PRODUCTCODE = 'GAME6' AND UP.IMAGEFILE IS NOT NULL;
+/*Task 6*/
+SELECT DISTINCT w.productcode
+FROM wishlist w
+JOIN reviews r ON w.productcode = r.productcode
+WHERE w.position IN (1, 2)
+  AND r.rating >= 3;
+/*Task 7*/
+SELECT USERNAME, BIRTHDAY
+FROM userbase
+WHERE BIRTHDAY IN (
+    SELECT BIRTHDAY
+    FROM userbase
+    GROUP BY BIRTHDAY
+    HAVING COUNT(*) > 1
+)
+ORDER BY BIRTHDAY;
+/*Task 8*/
+SELECT *
+FROM USERLIBRARY
+CROSS JOIN WISHLIST;
+/*Task 9*/
+SELECT FIRSTNAME, LASTNAME, USERNAME, EMAIL
+FROM USERBASE
+
+UNION ALL
+
+SELECT PRODUCTCODE, PRODUCTNAME, PUBLISHER, GENRE
+FROM PRODUCTLIST;
+/*Task 10*/
+SELECT SENDERID AS USER_ID,
+       DATESENT AS ACTIVITY_DATE,
+      'Message Sent' AS ACTIVITY_TYPE,
+      CONTENT AS DETAILS
+FROM CHATLOG
+
+UNION ALL
+
+SELECT RECEIVERID AS USER_ID,
+       DATESENT AS ACTIVITY_DATE,
+      'Message Received' AS ACTIVITY_TYPE,
+      CONTENT AS DETAILS
+FROM CHATLOG
+
+UNION ALL
+
+SELECT USERID AS USER_ID,
+       NULL AS ACTIVITY_DATE,
+       'Profile Update' AS ACTIVITY_TYPE,
+       DESCRIPTION AS DETAILS
+FROM USERPROFILE;
+/*Task 11*/
+SELECT U.USERNAME
+FROM USERBASE U
+LEFT JOIN INFRACTIONS I ON U.USERID = I.USERID
+WHERE I.USERID IS NULL;
+/*Task 12*/
+SELECT CR.TITLE, CR.DESCRIPTION
+FROM COMMUNITYRULES CR
+LEFT JOIN INFRACTIONS I ON CR.Rulenum = I.Rulenum
+WHERE I.Rulenum IS NULL;
+/*Task 13*/
+SELECT ub.username,
+       ub.email
+FROM userbase ub
+INNER JOIN infractions i ON ub.userid = i.userid
+WHERE i.penalty IS NOT NULL;
+/*Task 14*/
+SELECT DISTINCT i.dateassigned AS CommonDate
+FROM infractions i
+INNER JOIN usersupport u
+ON i.dateassigned = u.datesubmitted;
+/*Task 15*/
+SELECT communityrules.title, infractions.penalty
+FROM communityrules
+JOIN infractions ON communityrules.rulenum = infractions.rulenum;
+/*Task 16*/
+SELECT c.*,
+       CASE 
+           WHEN c.SEVERITYPOINT >= 10 THEN 'Bannable'
+           ELSE 'Appealable'
+       END AS RuleStatus
+FROM COMMUNITYRULES c;
+/*Task 17*/
+SELECT t.*,
+       CASE 
+           WHEN status != 'Closed' AND dateupdated < CURRENT_DATE - INTERVAL '7' DAY 
+           THEN 'High Priority'
+           ELSE 'Normal'
+       END AS TicketStatus
+FROM USERSUPPORT t;
+/*Task 18*/
+SELECT *
+FROM USERSUPPORT
+CROSS JOIN INFRACTIONS;
+/*Task 19*/
+SELECT TICKETID, DATEUPDATED
+FROM usersupport
+WHERE status = 'CLOSED'
+  AND CAST(DATEUPDATED AS DATE) = CAST(DATESUBMITTED AS DATE);
+/*Task 20*/
+SELECT userid,
+       birthday AS activity_date,
+      'Account Creation/Birthday' AS activity_type
+FROM USERBASE
+UNION ALL
+SELECT userid,
+       dateassigned AS activity_date,
+       'Infraction Assigned' AS activity_type
+FROM INFRACTIONS
+ORDER BY activity_date;
